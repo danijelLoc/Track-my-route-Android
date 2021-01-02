@@ -9,6 +9,7 @@ import hr.fer.login.api.RetrofitClient
 import hr.fer.login.api.SharedPrefManager
 import hr.fer.login.data.model.LoginResponse
 import hr.fer.login.data.model.UserSimple
+import hr.fer.login.ui.registration.RegistrationActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 
@@ -24,7 +25,8 @@ class MainActivity : AppCompatActivity() {
 
 
         button_register.setOnClickListener {
-            Toast.makeText(applicationContext,"Coming soon", Toast.LENGTH_LONG).show()
+            val intent = Intent(this, RegistrationActivity::class.java)
+            startActivity(intent)
         }
 
         login_button.setOnClickListener {
