@@ -36,25 +36,25 @@ class RegistrationActivity : AppCompatActivity() {
             }
 
             if(lastNameText.isEmpty()) {
-                editTextLastName.error = "First name required"
+                editTextLastName.error = "Last name required"
                 editTextLastName.requestFocus()
                 return@setOnClickListener
             }
 
             if(emailText.isEmpty()) {
-                editTextEmail.error = "First name required"
+                editTextEmail.error = "Email required"
                 editTextEmail.requestFocus()
                 return@setOnClickListener
             }
 
             if(usernameText.isEmpty()) {
-                editTextUsername.error = "First name required"
+                editTextUsername.error = "Username required"
                 editTextUsername.requestFocus()
                 return@setOnClickListener
             }
 
             if(passwordText.isEmpty()) {
-                editTextPassword.error = "First name required"
+                editTextPassword.error = "Password required"
                 editTextPassword.requestFocus()
                 return@setOnClickListener
             }
@@ -73,11 +73,12 @@ class RegistrationActivity : AppCompatActivity() {
                     override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
                         if(response.body()==null) {
                             if(response.code()==406) {
-                                editTextFirstName.error = "Registration invalid"
+                                registerTextView.error = "Registration invalid"
+                                val toast = Toast.makeText(applicationContext, "Registration invalid", Toast.LENGTH_LONG).show()
                                 editTextFirstName.requestFocus()
                             }
                             else {
-                                val toast = Toast.makeText(applicationContext, "code: &{response.code()}", Toast.LENGTH_LONG).show()
+                                val toast0 = Toast.makeText(applicationContext, "code: &{response.code()}", Toast.LENGTH_LONG).show()
                             }
                         }
                         else if(!(response.body()?.error!!)) {
