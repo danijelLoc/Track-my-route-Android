@@ -1,14 +1,12 @@
-package hr.fer.login.api
+package hr.fer.trackmyroute.api
 
 
-import hr.fer.login.data.model.LoginResponse
-import hr.fer.login.data.model.RegisterResponse
-import hr.fer.login.data.model.User
-import hr.fer.login.data.model.UserSimple
+import hr.fer.trackmyroute.data.model.LoginResponse
+import hr.fer.trackmyroute.data.model.RegisterResponse
+import hr.fer.trackmyroute.data.model.User
+import hr.fer.trackmyroute.data.model.UserSimple
 import retrofit2.Call
 import retrofit2.http.Body
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 

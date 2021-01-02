@@ -1,15 +1,15 @@
-package hr.fer.login.ui.login
+package hr.fer.trackmyroute.ui.login
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import hr.fer.login.R
-import hr.fer.login.api.RetrofitClient
-import hr.fer.login.api.SharedPrefManager
-import hr.fer.login.data.model.LoginResponse
-import hr.fer.login.data.model.UserSimple
-import hr.fer.login.ui.registration.RegistrationActivity
+import hr.fer.trackmyroute.R
+import hr.fer.trackmyroute.api.RetrofitClient
+import hr.fer.trackmyroute.api.SharedPrefManager
+import hr.fer.trackmyroute.data.model.LoginResponse
+import hr.fer.trackmyroute.data.model.UserSimple
+import hr.fer.trackmyroute.ui.registration.RegistrationActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
             val password_text = password.text.toString().trim()
 
             if(username_text.isEmpty()){
-                username.error = "Email required"
+                username.error = "Username required"
                 username.requestFocus()
                 return@setOnClickListener
             }

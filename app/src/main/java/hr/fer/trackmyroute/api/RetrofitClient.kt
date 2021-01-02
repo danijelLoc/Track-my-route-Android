@@ -1,6 +1,5 @@
-package hr.fer.login.api
+package hr.fer.trackmyroute.api
 
-import android.util.Base64
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

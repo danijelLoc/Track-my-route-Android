@@ -1,11 +1,11 @@
-package hr.fer.login.ui.login
+package hr.fer.trackmyroute.ui.login
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import hr.fer.login.R
-import hr.fer.login.api.SharedPrefManager
-import hr.fer.login.data.model.User
+import hr.fer.trackmyroute.R
+import hr.fer.trackmyroute.api.SharedPrefManager
+import hr.fer.trackmyroute.data.model.User
 import kotlinx.android.synthetic.main.activity_profile.*
 
 class ProfileActivity : AppCompatActivity() {

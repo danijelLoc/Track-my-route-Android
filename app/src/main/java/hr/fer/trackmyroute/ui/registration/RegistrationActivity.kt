@@ -1,12 +1,12 @@
-package hr.fer.login.ui.registration
+package hr.fer.trackmyroute.ui.registration
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import hr.fer.login.R
-import hr.fer.login.api.RetrofitClient
-import hr.fer.login.data.model.RegisterResponse
-import hr.fer.login.data.model.User
+import hr.fer.trackmyroute.R
+import hr.fer.trackmyroute.api.RetrofitClient
+import hr.fer.trackmyroute.data.model.RegisterResponse
+import hr.fer.trackmyroute.data.model.User
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

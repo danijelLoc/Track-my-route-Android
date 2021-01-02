@@ -1,7 +1,7 @@
-package hr.fer.login.api
+package hr.fer.trackmyroute.api
 
 import android.content.Context
-import hr.fer.login.data.model.User
+import hr.fer.trackmyroute.data.model.User
 
 
 class SharedPrefManager private constructor(private val mCtx: Context) {

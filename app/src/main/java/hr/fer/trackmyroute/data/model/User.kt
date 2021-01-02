@@ -1,4 +1,4 @@
-package hr.fer.login.data.model
+package hr.fer.trackmyroute.data.model
 
 import java.io.Serializable
 

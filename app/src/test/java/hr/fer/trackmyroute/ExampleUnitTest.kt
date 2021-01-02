@@ -1,4 +1,4 @@
-package hr.fer.login
+package hr.fer.trackmyroute
 
 import org.junit.Test
 

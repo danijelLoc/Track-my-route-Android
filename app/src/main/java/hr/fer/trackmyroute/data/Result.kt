@@ -1,4 +1,4 @@
-package hr.fer.login.data
+package hr.fer.trackmyroute.data
 
 /**
  * A generic class that holds a value with its loading status.
