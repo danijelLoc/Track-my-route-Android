@@ -20,6 +20,7 @@ import hr.fer.trackmyroute.data.model.Route
 import hr.fer.trackmyroute.data.model.RouteResponse
 import hr.fer.trackmyroute.data.model.RoutesResponse
 import hr.fer.trackmyroute.ui.login.MainActivity
+import hr.fer.trackmyroute.ui.newroute.NewRouteActivity
 import kotlinx.android.synthetic.main.activity_route_list.*
 import retrofit2.Call
 
@@ -110,7 +111,7 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
 
 
         newRouteActionButton.setOnClickListener {
-            val intent = Intent(this, RouteDetails::class.java)
+            val intent = Intent(this, NewRouteActivity::class.java)
             startActivity(intent)
         }
 
@@ -136,7 +137,7 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
 
     override fun onRouteClick(position: Int) {
         Log.d("loc", "clicked $position");
-        val intent = Intent(this, RouteDetails::class.java)
+        val intent = Intent(this, NewRouteActivity::class.java)
         intent.putExtra("position", position)
         startActivityForResult(intent, 0)
     }
