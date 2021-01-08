@@ -10,13 +10,14 @@ import hr.fer.trackmyroute.api.SharedPrefManager
 import hr.fer.trackmyroute.data.model.LoginResponse
 import hr.fer.trackmyroute.data.model.UserSimple
 import hr.fer.trackmyroute.ui.registration.RegistrationActivity
+import hr.fer.trackmyroute.ui.routes.RouteListActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // remove title bar
+//         remove title bar
         try {
             this.supportActionBar!!.hide()
         } catch (e: NullPointerException) {
@@ -70,7 +71,9 @@ class MainActivity : AppCompatActivity() {
                             Toast.makeText(applicationContext, response.body().toString(), Toast.LENGTH_LONG).show()
 
                             SharedPrefManager.getInstance(applicationContext).saveUser(response.body()?.user!!)
-                            val intent = Intent(applicationContext, ProfileActivity::class.java)
+//                            val intent = Intent(applicationContext, ProfileActivity::class.java)
+//                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            val intent = Intent(applicationContext, RouteListActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                             startActivity(intent)
@@ -90,9 +93,10 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         if(SharedPrefManager.getInstance(this).isLoggedIn){
-            val intent = Intent(applicationContext, ProfileActivity::class.java)
+//            val intent = Intent(applicationContext, ProfileActivity::class.java)
+//            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            val intent = Intent(applicationContext, RouteListActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
             startActivity(intent)
         }
     }

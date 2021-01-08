@@ -24,7 +24,16 @@
         </activity>
         <activity
             android:name="hr.fer.trackmyroute.ui.login.ProfileActivity"
-            android:label="Profile"></activity>
+            android:label="Profile">
+        </activity>
+        <activity
+            android:name="hr.fer.trackmyroute.ui.routes.RouteListActivity"
+            android:label="RouteList">
+        </activity>
+        <activity
+            android:name="hr.fer.trackmyroute.ui.routes.RouteDetails"
+            android:label="RouteDetails">
+        </activity>
     </application>
 
 </manifest>
