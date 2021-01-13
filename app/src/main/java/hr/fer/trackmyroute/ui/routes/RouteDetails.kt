@@ -34,7 +34,14 @@ class RouteDetails : AppCompatActivity() {
             var route: Route = viewModel.getRouteFromRepository(position)
             var title: String? = route.name
             routeTitleEditText.setText(title)
+            dateTextView.setText(route.date)
+            timeTextView.setText("Time: " + route.duration.toString())
+            speedTextView.setText("Avg. speed:" + route.speed.toString() + " km/h")
+            distanceTextView.setText("Distance:" + route.distace.toString() + " km")
+
         } else Log.d("loc", "empty extras")
+
+
 
 
 
