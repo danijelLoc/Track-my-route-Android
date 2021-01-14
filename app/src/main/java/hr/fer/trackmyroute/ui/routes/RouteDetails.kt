@@ -115,18 +115,16 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        /*fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // request permission for location access
         ActivityCompat.requestPermissions(this,
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
             MY_PERMISSIONS_REQUEST_FINE_LOCATION)
-
+*/
         for (i in 1..routeLocations.size) {
             drawRoute(routeLocations[i-1], routeLocations[i])
         }
-
-
 
 
         saveRouteButton.setOnClickListener {
@@ -162,7 +160,6 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
                         ).show()
                     }
                 })
-            finish()
         }
     }
 
@@ -172,7 +169,7 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
 
 
 
-    override fun onRequestPermissionsResult(requestCode: Int,
+    /*override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             MY_PERMISSIONS_REQUEST_FINE_LOCATION -> {
@@ -195,13 +192,12 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
                     }
 
                 } else {
-                    // TODO handle permission not granted
                 }
                 return
             }
 
         }
-    }
+    }*/
 
 
     private fun getGeoContext(): GeoApiContext {
@@ -224,23 +220,15 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
             override fun onResult(result: DirectionsResult) {
                 // Handle successful request.
                 runOnUiThread {
-                    mMap.addMarker(
-                        MarkerOptions().position(
-                        LatLng(result.routes[0].legs[0].startLocation.lat,
-                            result.routes[0].legs[0].startLocation.lng)) )
-                    mMap.addMarker(
-                        MarkerOptions().position(
-                        LatLng(result.routes[0].legs[0].endLocation.lat,
-                            result.routes[0].legs[0].endLocation.lng)))
-
                     mMap.addCircle(
                            CircleOptions().center(
                                     LatLng(result.routes[0].legs[0].startLocation.lat,
                                             result.routes[0].legs[0].startLocation.lng)).radius(1.5).strokeColor(Color.rgb(68, 114, 196)).fillColor(Color.rgb(68, 114, 196)))
+
                     mMap.addCircle(
                             CircleOptions().center(
                                     LatLng(result.routes[0].legs[0].endLocation.lat,
-                                            result.routes[0].legs[0].endLocation.lng)))
+                                            result.routes[0].legs[0].endLocation.lng)).radius(1.5).strokeColor(Color.rgb(68, 114, 196)).fillColor(Color.rgb(68, 114, 196)))
 
                     val decodedPath = PolyUtil.decode(result.routes[0].overviewPolyline.encodedPath)
                     mMap.addPolyline(PolylineOptions().addAll(decodedPath))
@@ -255,11 +243,10 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
 
     }
 
-    companion object {
+    /*companion object {
         val MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0
-        val FER_LOCATION = "45.801432, 15.971117"
         val ZOOM_RATE = 16.0f
-    }
+    }*/
 
 
 }

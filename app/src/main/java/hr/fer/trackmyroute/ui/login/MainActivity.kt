@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //         remove title bar
