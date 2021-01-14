@@ -36,17 +36,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/routeTitleEditText" />
 
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@+id/dateTextView"
+        tools:context=".MapsActivity" />
+
     <LinearLayout
         android:id="@+id/detailsLinearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateTextView">
+        app:layout_constraintTop_toBottomOf="@+id/map">
 
         <TextView
             android:id="@+id/timeTextView"
@@ -80,6 +89,6 @@
         android:text="Save route"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/detailsLinearLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
