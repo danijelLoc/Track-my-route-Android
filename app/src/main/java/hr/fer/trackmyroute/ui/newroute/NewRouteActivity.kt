@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -29,14 +30,16 @@ import com.google.maps.android.PolyUtil
 import com.google.maps.model.DirectionsResult
 import com.google.maps.model.TravelMode
 import hr.fer.trackmyroute.R
+import hr.fer.trackmyroute.api.RetrofitClient
+import hr.fer.trackmyroute.api.RoutesViewModel
 import hr.fer.trackmyroute.api.SharedPrefManager
-import hr.fer.trackmyroute.data.model.Location
-import hr.fer.trackmyroute.data.model.LocationModel
+import hr.fer.trackmyroute.data.model.*
 import hr.fer.trackmyroute.ui.login.MainActivity
 import hr.fer.trackmyroute.viewmodel.distanceViewModel
 import hr.fer.trackmyroute.viewmodel.durationViewModel
 import kotlinx.android.synthetic.main.activity_newroute.*
 import org.joda.time.DateTime
+import retrofit2.Call
 import kotlin.math.*
 
 class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
@@ -75,6 +78,10 @@ ActivityCompat.OnRequestPermissionsResultCallback {
 
         var avgSpeed: Double = 0.0
         var avgSpeedString: String
+
+        val routesViewModel =
+            ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
+                RoutesViewModel::class.java)
 
         val distanceViewModel =
             ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
@@ -206,6 +213,63 @@ ActivityCompat.OnRequestPermissionsResultCallback {
         stopButton.setOnClickListener {
             durationViewModel.onStop()
             distanceViewModel.onStop()
+            var route: Route = Route()
+            var routeName = editTextRouteName.text.toString()
+
+            if (routeName.isEmpty()) {
+                editTextRouteName.error = "Route name required"
+                editTextRouteName.requestFocus()
+                return@setOnClickListener
+            }
+
+            route.name = routeName
+            route.date = DateTime().toString()
+            route.distance = distanceViewModel.distance
+            route.duration = durationViewModel.durationInHours
+            route.speed = route.distance/route.duration
+
+            RetrofitClient.instance.saveRoute(route)
+                .enqueue(object : retrofit2.Callback<RouteResponse> {
+                    override fun onFailure(call: Call<RouteResponse>, t: Throwable) {
+                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
+                    }
+
+                    override fun onResponse(
+                        call: Call<RouteResponse>,
+                        response: retrofit2.Response<RouteResponse>
+                    ) {
+                        if (!response.body()?.error!!) {
+                            routesViewModel.saveRouteToRepository(route)
+                        }
+                        Toast.makeText(
+                            applicationContext,
+                            response.body()?.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                })
+
+            RetrofitClient.instance.saveRouteLocations(distanceViewModel.locationList)
+                .enqueue(object : retrofit2.Callback<RouteLocationResponse> {
+                    override fun onFailure(call: Call<RouteLocationResponse>, t: Throwable) {
+                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
+                    }
+
+                    override fun onResponse(
+                        call: Call<RouteLocationResponse>,
+                        response: retrofit2.Response<RouteLocationResponse>
+                    ) {
+                        if (!response.body()?.error!!) {
+                        }
+                        Toast.makeText(
+                            applicationContext,
+                            response.body()?.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                })
+
+            finish()
         }
     }
     /**
