@@ -5,6 +5,8 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import hr.fer.trackmyroute.data.model.Location
+import hr.fer.trackmyroute.data.model.LocationModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -24,13 +26,26 @@ class distanceViewModel: ViewModel() {
 
     val resultOfDataFetch = MutableLiveData<String>()
     var stopFlag = false
-    var startFlag = false
+    var startFlag = true
     var distance: Double = 0.0
+    var locationModel = MutableLiveData<LocationModel>()
+    var locationList =  mutableListOf<Location>()
+    var recordFlag = false
+    var i: Double = 0.001
 
     fun onStop()
     {
         viewModelScope.apply {
             stopFlag = true
+            recordFlag = false
+        }
+    }
+
+    fun onStart()
+    {
+        viewModelScope.apply {
+            startFlag = false
+            recordFlag = true
         }
     }
 
@@ -39,20 +54,23 @@ class distanceViewModel: ViewModel() {
     fun fetchDataFromRepository() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                if(!startFlag)
+                if(recordFlag)
                 {
                     startFlag = true
                     stopFlag = false
-                    var i: Double = 0.0
                     var s: String = ""
 
-                    while(true)
+                    if (stopFlag)
                     {
-                        if (stopFlag) {
-                            stopFlag = false
-                            break
-                        }
+                        stopFlag = true
+                    } else {
 
+                        if (locationList?.size!! > 1)
+                        {
+                            distance = calculateDistance(locationList!!.get(locationList?.size!! -1).latitude, locationList!!.get(locationList?.size!! -1).longitude,
+                                                         locationList!!.get(locationList?.size!! -2).latitude, locationList!!.get(locationList?.size!! -2).longitude,
+                                                         distance)
+                        }
 
 
                         if(distance < 1)
@@ -67,10 +85,10 @@ class distanceViewModel: ViewModel() {
                         withContext(Dispatchers.Main) {
                             resultOfDataFetch.value = s
                         }
-                        distance = calculateDistance(45.817957692522924, 16.068609569335337, 45.81790392046314, 16.068616135669703)
-                        distance += i
-                        i += 0.001
-                        distance = distanceRepository.fetchData(distance)
+                        //distance = calculateDistance(45.817957692522924, 16.068609569335337, 45.81790392046314, 16.068616135669703)
+                        //distance += i
+                        //i += 0.001
+                        //distance = distanceRepository.fetchData(distance)
                         //distance += 0.001
                     }
                 }
@@ -78,10 +96,10 @@ class distanceViewModel: ViewModel() {
         }
     }
 
-    fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double
+    fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double, oldDistance: Double): Double
     {
         var distance: Double
-        val radius : Int = 6371
+        val radius : Double = 6371.0
         var dLat : Double = degreeToRadian(lat2-lat1)
         var dLon : Double = degreeToRadian(lon2-lon1)
 
@@ -91,7 +109,7 @@ class distanceViewModel: ViewModel() {
 
         var c: Double = 2 * atan2(sqrt(a), sqrt(1-a))
 
-        distance = radius * c
+        distance = radius * c + oldDistance
 
         return distance
     }

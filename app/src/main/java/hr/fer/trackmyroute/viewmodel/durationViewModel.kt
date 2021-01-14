@@ -19,6 +19,8 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import hr.fer.trackmyroute.viewmodel.distanceViewModel
+
 
 class durationViewModel: ViewModel() {
 
@@ -70,7 +72,6 @@ class durationViewModel: ViewModel() {
                         withContext(Dispatchers.Main) {
                             resultOfDataFetch.value = duration.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                         }
-
                         duration = durationRepository.fetchData(duration)
                     }
                 }

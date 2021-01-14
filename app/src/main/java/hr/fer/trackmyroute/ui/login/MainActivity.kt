@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 
 class MainActivity : AppCompatActivity() {
-
+    @Override
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //         remove title bar
@@ -90,6 +90,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Override
     override fun onStart() {
         super.onStart()
 
