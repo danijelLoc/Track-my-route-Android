@@ -1,19 +1,12 @@
 package hr.fer.trackmyroute.data.model
 
 import java.time.LocalTime
+import java.io.Serializable
 
-class Location (var latitude: Double, var longitude: Double) {
-    //var latitude: Double
-    //var longitude: Double
-    //lateinit var moment: LocalTime
-
-    //constructor()
-
-    /*fun Location(latitude: Double, longitude: Double, moment: LocalTime)
-    {
-        this.latitude = latitude
-        this.longitude = longitude
-        this.moment = moment
-    }*/
-
-}
+data class Location(
+    var latitude: Double,
+    var longitude: Double,
+    var moment: String = "",
+    var id: Long = -1,
+    var route: Route = Route()
+) : Serializable

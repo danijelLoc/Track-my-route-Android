@@ -39,7 +39,11 @@ import hr.fer.trackmyroute.viewmodel.distanceViewModel
 import hr.fer.trackmyroute.viewmodel.durationViewModel
 import kotlinx.android.synthetic.main.activity_newroute.*
 import org.joda.time.DateTime
+import org.joda.time.LocalDate
 import retrofit2.Call
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.*
 import kotlin.math.*
 
 class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
@@ -125,9 +129,8 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                         distanceViewModel.locationList!!.add(
                             Location(
                                 lastKnownLocation!!.latitude,
-                                lastKnownLocation!!.longitude/*,
-                       LocalTime.now()*/
-                            ))
+                                lastKnownLocation!!.longitude,
+                                LocalDateTime.now().toString()))
                         drawRoute()
                         lastKnownLocationCheck = lastKnownLocation
                     }
@@ -150,9 +153,8 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                             distanceViewModel.locationList!!.add(
                                 Location(
                                     lastKnownLocation!!.latitude,
-                                    lastKnownLocation!!.longitude/*,
-                       LocalTime.now()*/
-                                ))
+                                    lastKnownLocation!!.longitude,
+                                    LocalDateTime.now().toString()))
                             drawRoute()
                             lastKnownLocationCheck = lastKnownLocation
                         }
@@ -223,7 +225,7 @@ ActivityCompat.OnRequestPermissionsResultCallback {
             }
 
             route.name = routeName
-            route.date = DateTime().toString()
+            route.date = LocalDateTime.now().toString() //"2021-01-08T12:02:45.137"
             route.distance = distanceViewModel.distance
             route.duration = durationViewModel.durationInHours
             route.speed = route.distance/route.duration
@@ -249,6 +251,7 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                     }
                 })
 
+            /*
             RetrofitClient.instance.saveRouteLocations(distanceViewModel.locationList)
                 .enqueue(object : retrofit2.Callback<RouteLocationResponse> {
                     override fun onFailure(call: Call<RouteLocationResponse>, t: Throwable) {
@@ -268,7 +271,7 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                         ).show()
                     }
                 })
-
+*/
             finish()
         }
     }
