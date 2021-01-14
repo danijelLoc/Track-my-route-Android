@@ -11,5 +11,5 @@ data class Route(
     var date: String = "",
     var duration: Long = -1,
     var speed: Double = -1.0,
-    var distace: Double = -1.0
+    var distance: Double = -1.0
 ) : Serializable
