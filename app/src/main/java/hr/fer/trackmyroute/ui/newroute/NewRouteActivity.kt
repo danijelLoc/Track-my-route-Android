@@ -215,6 +215,7 @@ ActivityCompat.OnRequestPermissionsResultCallback {
         stopButton.setOnClickListener {
             durationViewModel.onStop()
             distanceViewModel.onStop()
+            Thread.sleep(1000)
             var route: Route = Route()
             var routeName = editTextRouteName.text.toString()
 
@@ -229,25 +230,27 @@ ActivityCompat.OnRequestPermissionsResultCallback {
             route.distance = distanceViewModel.distance
             route.duration = durationViewModel.durationInHours
             route.speed = route.distance/route.duration
+            route.user = SharedPrefManager.getInstance(applicationContext).user
 
             RetrofitClient.instance.saveRoute(route)
-                .enqueue(object : retrofit2.Callback<RouteResponse> {
-                    override fun onFailure(call: Call<RouteResponse>, t: Throwable) {
+                .enqueue(object : retrofit2.Callback<Route> {
+                    override fun onFailure(call: Call<Route>, t: Throwable) {
                         Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
                     }
 
                     override fun onResponse(
-                        call: Call<RouteResponse>,
-                        response: retrofit2.Response<RouteResponse>
+                        call: Call<Route>,
+                        response: retrofit2.Response<Route>
                     ) {
-                        if (!response.body()?.error!!) {
+                        if (response.code()==200) {
+                            route = response.body()!!
                             routesViewModel.saveRouteToRepository(route)
                         }
-                        Toast.makeText(
+                        /*Toast.makeText(
                             applicationContext,
-                            response.body()?.message,
+                            response.body()!!,
                             Toast.LENGTH_LONG
-                        ).show()
+                        ).show()*/
                     }
                 })
 

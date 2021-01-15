@@ -48,16 +48,16 @@ class RouteDetails : AppCompatActivity() {
 
 
             RetrofitClient.instance.saveRoute(route)
-                .enqueue(object : retrofit2.Callback<RouteResponse> {
-                    override fun onFailure(call: Call<RouteResponse>, t: Throwable) {
+                .enqueue(object : retrofit2.Callback<Route> {
+                    override fun onFailure(call: Call<Route>, t: Throwable) {
                         Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
                     }
 
                     override fun onResponse(
-                        call: Call<RouteResponse>,
-                        response: retrofit2.Response<RouteResponse>
+                        call: Call<Route>,
+                        response: retrofit2.Response<Route>
                     ) {
-                        if (!response.body()?.error!!) {
+                        if (response.code() == 200) {
                             // save to live data on front end
                             if (oldRoutePosition != null) {
                                 viewModel.updateRouteInRepository(oldRoutePosition!!, route)
@@ -65,11 +65,11 @@ class RouteDetails : AppCompatActivity() {
 
                             } else viewModel.saveRouteToRepository(route)
                         }
-                        Toast.makeText(
+                        /*Toast.makeText(
                             applicationContext,
                             response.body()?.message,
                             Toast.LENGTH_LONG
-                        ).show()
+                        ).show()*/
                     }
                 })
             finish()
