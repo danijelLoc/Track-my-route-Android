@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.makeText(applicationContext, response.body().toString(), Toast.LENGTH_LONG).show()
 
                             SharedPrefManager.getInstance(applicationContext).saveUser(response.body()?.user!!)
+
 //                            val intent = Intent(applicationContext, ProfileActivity::class.java)
 //                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             val intent = Intent(applicationContext, RouteListActivity::class.java)
