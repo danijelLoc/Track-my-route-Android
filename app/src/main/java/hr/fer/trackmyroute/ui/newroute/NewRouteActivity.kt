@@ -232,6 +232,8 @@ ActivityCompat.OnRequestPermissionsResultCallback {
             route.speed = route.distance/route.duration
             route.user = SharedPrefManager.getInstance(applicationContext).user
 
+            var newRoute: Route = Route()
+
             RetrofitClient.instance.saveRoute(route)
                 .enqueue(object : retrofit2.Callback<Route> {
                     override fun onFailure(call: Call<Route>, t: Throwable) {
@@ -243,8 +245,8 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                         response: retrofit2.Response<Route>
                     ) {
                         if (response.code()==200) {
-                            route = response.body()!!
-                            routesViewModel.saveRouteToRepository(route)
+                            newRoute = response.body()!!
+                            routesViewModel.saveRouteToRepository(newRoute)
                         }
                         /*Toast.makeText(
                             applicationContext,
@@ -254,8 +256,8 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                     }
                 })
 
-            /*
-            RetrofitClient.instance.saveRouteLocations(distanceViewModel.locationList)
+
+            RetrofitClient.instance.saveRouteLocations(distanceViewModel.locationList, newRoute)
                 .enqueue(object : retrofit2.Callback<RouteLocationResponse> {
                     override fun onFailure(call: Call<RouteLocationResponse>, t: Throwable) {
                         Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
@@ -274,7 +276,7 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                         ).show()
                     }
                 })
-*/
+
             finish()
         }
     }
