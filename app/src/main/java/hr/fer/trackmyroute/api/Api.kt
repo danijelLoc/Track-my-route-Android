@@ -29,7 +29,7 @@ interface Api {
     fun deleteRoute(@Body route: Route): Call<RouteResponse>
 
     @POST("/saveRouteLocations")
-    fun saveRouteLocations(@Body routeLocations: List<Location>): Call<RouteLocationResponse>
+    fun saveRouteLocations(@Body routeLocations: List<Location>, @Body route: Route): Call<RouteLocationResponse>
 
     @GET("/routeLocations")
     fun getRouteLocations(@Query("route_id") route_id:Long?):Call<RouteLocationsResponse>
