@@ -137,7 +137,7 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
 
     override fun onRouteClick(position: Int) {
         Log.d("loc", "clicked $position");
-        val intent = Intent(this, NewRouteActivity::class.java)
+        val intent = Intent(this, RouteDetails::class.java)
         intent.putExtra("position", position)
         startActivityForResult(intent, 0)
     }
