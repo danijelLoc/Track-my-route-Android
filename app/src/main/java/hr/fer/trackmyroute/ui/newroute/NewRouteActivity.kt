@@ -47,7 +47,7 @@ import java.util.*
 import kotlin.math.*
 
 class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
-ActivityCompat.OnRequestPermissionsResultCallback {
+    ActivityCompat.OnRequestPermissionsResultCallback {
 
     private var lastKnownLocationCheck: LatLng? = null
     private lateinit var mMap: GoogleMap
@@ -55,7 +55,7 @@ ActivityCompat.OnRequestPermissionsResultCallback {
     private var lastKnownLocation: LatLng? = null
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationRequest: LocationRequest
-    private var lastKnownLocationNotNull : Boolean = false
+    private var lastKnownLocationNotNull: Boolean = false
 
     @Override
     @RequiresApi(Build.VERSION_CODES.O)
@@ -76,24 +76,29 @@ ActivityCompat.OnRequestPermissionsResultCallback {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // request permission for location access
-        ActivityCompat.requestPermissions(this,
+        ActivityCompat.requestPermissions(
+            this,
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            MY_PERMISSIONS_REQUEST_FINE_LOCATION)
+            MY_PERMISSIONS_REQUEST_FINE_LOCATION
+        )
 
         var avgSpeed: Double = 0.0
         var avgSpeedString: String
 
         val routesViewModel =
             ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
-                RoutesViewModel::class.java)
+                RoutesViewModel::class.java
+            )
 
         val distanceViewModel =
             ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
-                distanceViewModel::class.java)
+                distanceViewModel::class.java
+            )
 
         val durationViewModel =
             ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
-                durationViewModel::class.java)
+                durationViewModel::class.java
+            )
 
         distanceViewModel.locationModel.value = LocationModel()
 
@@ -119,49 +124,62 @@ ActivityCompat.OnRequestPermissionsResultCallback {
 
                     //distanceViewModel.locationModel.value =distanceViewModel.locationList!!.get(-1)
                 }*/
-                lastKnownLocation = LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude)
+                lastKnownLocation = LatLng(
+                    locationResult.lastLocation.latitude,
+                    locationResult.lastLocation.longitude
+                )
                 //if (fusedLocationClient != null)
-                    //fusedLocationClient.removeLocationUpdates(locationCallback)
+                //fusedLocationClient.removeLocationUpdates(locationCallback)
 
-                if (lastKnownLocationCheck == null)
-                {
+                if (lastKnownLocationCheck == null) {
                     if (distanceViewModel.recordFlag) {
                         distanceViewModel.locationList!!.add(
                             Location(
                                 lastKnownLocation!!.latitude,
-                                lastKnownLocation!!.longitude,
-                                LocalDateTime.now().toString()))
+                                lastKnownLocation!!.longitude
+                                //LocalDateTime.now().toString()
+                            )
+                        )
                         drawRoute()
                         lastKnownLocationCheck = lastKnownLocation
                     }
                     if (lastKnownLocationNotNull)
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(lastKnownLocation))
                     else
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastKnownLocation, ZOOM_RATE))
+                        mMap.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                lastKnownLocation,
+                                ZOOM_RATE
+                            )
+                        )
                     lastKnownLocationNotNull = true
                     val locationModel = distanceViewModel.locationModel.value
-                    locationModel!!.numberOfUpdatedLocations = locationModel?.numberOfUpdatedLocations + 1
+                    locationModel!!.numberOfUpdatedLocations =
+                        locationModel?.numberOfUpdatedLocations + 1
                     distanceViewModel.locationModel.value = locationModel
-                } else
-                {
+                } else {
                     if (calculateDistance(
                             lastKnownLocation!!.latitude, lastKnownLocation!!.longitude,
                             lastKnownLocationCheck!!.latitude, lastKnownLocationCheck!!.longitude,
-                            0.0) > 0.01)
-                    {
+                            0.0
+                        ) > 0.01
+                    ) {
                         if (distanceViewModel.recordFlag) {
                             distanceViewModel.locationList!!.add(
                                 Location(
                                     lastKnownLocation!!.latitude,
-                                    lastKnownLocation!!.longitude,
-                                    LocalDateTime.now().toString()))
+                                    lastKnownLocation!!.longitude
+                                    //LocalDateTime.now().toString()
+                                )
+                            )
                             drawRoute()
                             lastKnownLocationCheck = lastKnownLocation
                         }
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(lastKnownLocation))
                         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastKnownLocation, ZOOM_RATE))
                         val locationModel = distanceViewModel.locationModel.value
-                        locationModel!!.numberOfUpdatedLocations = locationModel?.numberOfUpdatedLocations + 1
+                        locationModel!!.numberOfUpdatedLocations =
+                            locationModel?.numberOfUpdatedLocations + 1
                         distanceViewModel.locationModel.value = locationModel
                     }
                 }
@@ -189,8 +207,7 @@ ActivityCompat.OnRequestPermissionsResultCallback {
 
         distanceViewModel.resultOfDataFetch.observe(this, Observer {
             distanceTextView.text = it
-            if (fusedLocationClient != null)
-            {
+            if (fusedLocationClient != null) {
                 //requestLocationUpdates()
             }
 
@@ -229,11 +246,11 @@ ActivityCompat.OnRequestPermissionsResultCallback {
             route.date = LocalDateTime.now().toString() //"2021-01-08T12:02:45.137"
             route.distance = distanceViewModel.distance
             route.duration = durationViewModel.durationInHours
-            route.speed = route.distance/route.duration
+            route.speed = route.distance / route.duration
             route.user = SharedPrefManager.getInstance(applicationContext).user
 
-            var newRoute: Route = Route()
 
+            // save route
             RetrofitClient.instance.saveRoute(route)
                 .enqueue(object : retrofit2.Callback<Route> {
                     override fun onFailure(call: Call<Route>, t: Throwable) {
@@ -244,9 +261,51 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                         call: Call<Route>,
                         response: retrofit2.Response<Route>
                     ) {
-                        if (response.code()==200) {
-                            newRoute = response.body()!!
+                        if (response.code() == 200) {
+                            val newRoute: Route = response.body()!!
                             routesViewModel.saveRouteToRepository(newRoute)
+                            // save locations +++++++++++++++++++++++++++++++++++++++++++++++++
+                            var locations = distanceViewModel.locationList
+                            for((index,value) in locations.withIndex()){
+                                var location = value;
+                                location.route=newRoute
+                                locations.set(index,location)
+                            }
+                            RetrofitClient.instance.saveRouteLocations(
+                                newRoute.id,
+                                locations
+                            )
+                                .enqueue(object : retrofit2.Callback<RouteLocationResponse> {
+                                    override fun onFailure(
+                                        call: Call<RouteLocationResponse>,
+                                        t: Throwable
+                                    ) {
+                                        Toast.makeText(
+                                            applicationContext,
+                                            t.message,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+
+                                    override fun onResponse(
+                                        call: Call<RouteLocationResponse>,
+                                        response: retrofit2.Response<RouteLocationResponse>
+                                    ) {
+                                        if (response.code() == 200) {
+                                            Toast.makeText(
+                                                applicationContext,
+                                                response.body()?.message,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        } else {
+                                            Toast.makeText(
+                                                applicationContext,
+                                                response.body()?.message,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    }
+                                })
                         }
                         /*Toast.makeText(
                             applicationContext,
@@ -257,29 +316,12 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                 })
 
 
-            RetrofitClient.instance.saveRouteLocations(distanceViewModel.locationList, newRoute)
-                .enqueue(object : retrofit2.Callback<RouteLocationResponse> {
-                    override fun onFailure(call: Call<RouteLocationResponse>, t: Throwable) {
-                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
-                    }
 
-                    override fun onResponse(
-                        call: Call<RouteLocationResponse>,
-                        response: retrofit2.Response<RouteLocationResponse>
-                    ) {
-                        if (!response.body()?.error!!) {
-                        }
-                        Toast.makeText(
-                            applicationContext,
-                            response.body()?.message,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                })
 
             finish()
         }
     }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -309,15 +351,21 @@ ActivityCompat.OnRequestPermissionsResultCallback {
 
 
     @Override
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>, grantResults: IntArray
+    ) {
         when (requestCode) {
             MY_PERMISSIONS_REQUEST_FINE_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
 
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(
+                            this,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+                        == PackageManager.PERMISSION_GRANTED
+                    ) {
                         // Permission is granted
                         mMap.isMyLocationEnabled = true
                         mMap.uiSettings.isMyLocationButtonEnabled = true
@@ -328,7 +376,8 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                         locationRequest.interval = 3000
                         locationRequest.fastestInterval = 3000
                         fusedLocationClient.requestLocationUpdates(
-                            locationRequest, locationCallback, null)
+                            locationRequest, locationCallback, null
+                        )
 
                     }
 
@@ -341,8 +390,7 @@ ActivityCompat.OnRequestPermissionsResultCallback {
         }
     }
 
-    private fun requestLocationUpdates()
-    {
+    private fun requestLocationUpdates() {
         locationRequest = LocationRequest()
         locationRequest.setInterval(5000) // two minute interval
 
@@ -378,8 +426,9 @@ ActivityCompat.OnRequestPermissionsResultCallback {
         else
             origin = "${lastKnownLocation?.latitude}, ${lastKnownLocation?.longitude}"
 
-        val req = DirectionsApi.newRequest(getGeoContext()).mode(TravelMode.WALKING).
-        origin(origin).destination("${lastKnownLocation?.latitude}, ${lastKnownLocation?.longitude}").departureTime(now)
+        val req = DirectionsApi.newRequest(getGeoContext()).mode(TravelMode.WALKING).origin(origin)
+            .destination("${lastKnownLocation?.latitude}, ${lastKnownLocation?.longitude}")
+            .departureTime(now)
 
 
         req.setCallback(object : PendingResult.Callback<DirectionsResult> {
@@ -394,23 +443,32 @@ ActivityCompat.OnRequestPermissionsResultCallback {
                         MarkerOptions().position(
                             LatLng(result.routes[0].legs[0].endLocation.lat,
                                 result.routes[0].legs[0].endLocation.lng)).icon(BitmapDescriptorFactory.defaultMarker(146F)))*/
-                    if (lastKnownLocationCheck != null)
-                    {
+                    if (lastKnownLocationCheck != null) {
                         mMap.addCircle(
                             CircleOptions().center(
-                                LatLng(result.routes[0].legs[0].endLocation.lat,
-                                    result.routes[0].legs[0].endLocation.lng)).radius(1.5).strokeColor(Color.rgb(68, 114, 196)).fillColor(Color.rgb(68, 114, 196)))
-                    }
-                    else
-                    {
+                                LatLng(
+                                    result.routes[0].legs[0].endLocation.lat,
+                                    result.routes[0].legs[0].endLocation.lng
+                                )
+                            ).radius(1.5).strokeColor(Color.rgb(68, 114, 196))
+                                .fillColor(Color.rgb(68, 114, 196))
+                        )
+                    } else {
                         mMap.addCircle(
                             CircleOptions().center(
-                                LatLng(result.routes[0].legs[0].startLocation.lat,
-                                    result.routes[0].legs[0].startLocation.lng)).radius(1.5).strokeColor(Color.rgb(68, 114, 196)).fillColor(Color.rgb(68, 114, 196)))
+                                LatLng(
+                                    result.routes[0].legs[0].startLocation.lat,
+                                    result.routes[0].legs[0].startLocation.lng
+                                )
+                            ).radius(1.5).strokeColor(Color.rgb(68, 114, 196))
+                                .fillColor(Color.rgb(68, 114, 196))
+                        )
                     }
 
                     val decodedPath = PolyUtil.decode(result.routes[0].overviewPolyline.encodedPath)
-                    mMap.addPolyline(PolylineOptions().addAll(decodedPath).color(Color.rgb(68, 114, 196)))
+                    mMap.addPolyline(
+                        PolylineOptions().addAll(decodedPath).color(Color.rgb(68, 114, 196))
+                    )
                 }
 
             }
@@ -431,33 +489,37 @@ ActivityCompat.OnRequestPermissionsResultCallback {
     override fun onStart() {
         super.onStart()
 
-        if(!SharedPrefManager.getInstance(this).isLoggedIn){
+        if (!SharedPrefManager.getInstance(this).isLoggedIn) {
             val intent = Intent(applicationContext, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
     }
 
-    fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double, oldDistance: Double): Double
-    {
+    fun calculateDistance(
+        lat1: Double,
+        lon1: Double,
+        lat2: Double,
+        lon2: Double,
+        oldDistance: Double
+    ): Double {
         var distance: Double
-        val radius : Int = 6371
-        var dLat : Double = degreeToRadian(lat2-lat1)
-        var dLon : Double = degreeToRadian(lon2-lon1)
+        val radius: Int = 6371
+        var dLat: Double = degreeToRadian(lat2 - lat1)
+        var dLon: Double = degreeToRadian(lon2 - lon1)
 
-        var a: Double = sin(dLat/2) * sin(dLat/2) +
+        var a: Double = sin(dLat / 2) * sin(dLat / 2) +
                 cos(degreeToRadian(lat1)) * cos(degreeToRadian(lat2)) *
-                sin(dLon/2) * sin(dLon/2)
+                sin(dLon / 2) * sin(dLon / 2)
 
-        var c: Double = 2 * atan2(sqrt(a), sqrt(1-a))
+        var c: Double = 2 * atan2(sqrt(a), sqrt(1 - a))
 
         distance = radius * c + oldDistance
 
         return distance
     }
 
-    fun degreeToRadian(deg: Double): Double
-    {
+    fun degreeToRadian(deg: Double): Double {
         return deg * (Math.PI / 180)
     }
 
@@ -518,8 +580,6 @@ ActivityCompat.OnRequestPermissionsResultCallback {
             finish()
         }
     }*/
-
-
 
 
 }
