@@ -4,6 +4,7 @@ import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.*
 
+
 data class Route(
     var id: Long = -1,
     var user: User = User(),

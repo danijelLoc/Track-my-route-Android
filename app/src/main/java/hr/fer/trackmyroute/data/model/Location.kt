@@ -6,7 +6,7 @@ import java.io.Serializable
 data class Location(
     var latitude: Double,
     var longitude: Double,
-    var moment: String = "",
+    //var moment: String = "",
     var id: Long = -1,
     var route: Route = Route()
 ) : Serializable
