@@ -9,8 +9,7 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
 
 //    private val AUTH = "Basic "+ Base64.encodeToString("dan:qwer1234".toByteArray(), Base64.NO_WRAP)
-
-    private const val BASE_URL = "http://192.168.100.111:8080/"
+    private const val BASE_URL = "http://10.4.224.65:8080/"
     // Create a new object from HttpLoggingInterceptor
 
 
