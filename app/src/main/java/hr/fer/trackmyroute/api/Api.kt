@@ -31,4 +31,7 @@ interface Api {
     @POST("/saveRouteLocations")
     fun saveRouteLocations(@Query("route_id") route_id:Long?, @Body routeLocations: List<Location>): Call<RouteLocationResponse>
 
+    @GET("/routeLocations")
+    fun getRouteLocations(@Query("route_id") route_id:Long?):Call<RouteLocationsResponse>
+
 }

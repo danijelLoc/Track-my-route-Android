@@ -76,6 +76,9 @@ class RegistrationActivity : AppCompatActivity() {
                                 registerTextView.error = "Registration invalid"
                                 val toast = Toast.makeText(applicationContext, "Registration invalid", Toast.LENGTH_LONG).show()
                                 editTextFirstName.requestFocus()
+                            } else if(response.code()==409) {
+                                editTextUsername.error = "Username already taken"
+                                editTextUsername.requestFocus()
                             }
                             else {
                                 val toast0 = Toast.makeText(applicationContext, "code: &{response.code()}", Toast.LENGTH_LONG).show()
