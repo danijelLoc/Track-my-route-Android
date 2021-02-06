@@ -297,6 +297,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
                                                 response.body()?.message,
                                                 Toast.LENGTH_LONG
                                             ).show()
+                                            finish()
                                         } else {
                                             Toast.makeText(
                                                 applicationContext,

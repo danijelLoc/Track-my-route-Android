@@ -127,7 +127,7 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
 
     override fun onResume() {
         super.onResume()
-        if(!SharedPrefManager.getInstance(this).isLoggedIn){
+        if (!SharedPrefManager.getInstance(this).isLoggedIn) {
             val intent = Intent(applicationContext, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -148,7 +148,7 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
         RetrofitClient.instance.deleteRoute(
             routesAdapter.listOfRoutes.getRouteFromRepository(
                 position
-            )
+            ).id
         )
             .enqueue(object : retrofit2.Callback<RouteResponse> {
                 override fun onFailure(call: Call<RouteResponse>, t: Throwable) {
@@ -194,7 +194,7 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
 
     override fun onStart() {
         super.onStart()
-        if(!SharedPrefManager.getInstance(this).isLoggedIn){
+        if (!SharedPrefManager.getInstance(this).isLoggedIn) {
             val intent = Intent(applicationContext, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)

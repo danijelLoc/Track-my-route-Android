@@ -13,25 +13,28 @@ interface Api {
 
     @POST("/loginUser")
     fun userLogin(
-            @Body userSimple: UserSimple
-    ):Call<LoginResponse>
+        @Body userSimple: UserSimple
+    ): Call<LoginResponse>
 
     @POST("/registerUser")
     fun registerUser(@Body user: User): Call<RegisterResponse>
 
     @GET("/routes")
-    fun getAllRoutes(@Query("user_id") user_id:Long?):Call<RoutesResponse>
+    fun getAllRoutes(@Query("user_id") user_id: Long?): Call<RoutesResponse>
 
     @POST("/saveRoute")
     fun saveRoute(@Body route: Route): Call<Route>
 
     @POST("/deleteRoute")
-    fun deleteRoute(@Body route: Route): Call<RouteResponse>
+    fun deleteRoute(@Query("route_id") route_id: Long?): Call<RouteResponse>
 
     @POST("/saveRouteLocations")
-    fun saveRouteLocations(@Query("route_id") route_id:Long?, @Body routeLocations: List<Location>): Call<RouteLocationResponse>
+    fun saveRouteLocations(
+        @Query("route_id") route_id: Long?,
+        @Body routeLocations: List<Location>
+    ): Call<RouteLocationResponse>
 
     @GET("/routeLocations")
-    fun getRouteLocations(@Query("route_id") route_id:Long?):Call<RouteLocationsResponse>
+    fun getRouteLocations(@Query("route_id") route_id: Long?): Call<RouteLocationsResponse>
 
 }
