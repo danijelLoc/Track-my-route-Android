@@ -22,21 +22,24 @@ import kotlin.math.sqrt
 import hr.fer.trackmyroute.viewmodel.distanceViewModel
 
 
-class durationViewModel: ViewModel() {
+class durationViewModel : ViewModel() {
 
     val resultOfDataFetch = MutableLiveData<String>()
     var stopFlag = false
     var startFlag = false
+
     @RequiresApi(Build.VERSION_CODES.O)
     var startTime: LocalTime = LocalTime.now()
+
     @RequiresApi(Build.VERSION_CODES.O)
     var currentTime: LocalTime = LocalTime.now()
+
     @RequiresApi(Build.VERSION_CODES.O)
     var duration: LocalTime = LocalTime.now()
     var durationInHours: Double = 0.0
+    var durationInMinutes: Double = 0.0
 
-    fun onStop()
-    {
+    fun onStop() {
         viewModelScope.apply {
             stopFlag = true
         }
@@ -47,15 +50,13 @@ class durationViewModel: ViewModel() {
     fun fetchDataFromRepository() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                if(!startFlag)
-                {
+                if (!startFlag) {
                     startTime = LocalTime.now()
                     startFlag = true
                     var fetchedResult: LocalTime
                     stopFlag = false
 
-                    while(true)
-                    {
+                    while (true) {
                         if (stopFlag) {
                             stopFlag = false
                             currentTime = startTime
@@ -69,8 +70,12 @@ class durationViewModel: ViewModel() {
                         durationInHours = duration.hour.toDouble()
                         durationInHours += duration.minute.toDouble() / 60.0
                         durationInHours += duration.second.toDouble() / 3600.0
+                        durationInMinutes = duration.hour.toDouble() * 60
+                        durationInMinutes += duration.minute.toDouble()
+                        durationInMinutes += duration.second.toDouble() / 60.0
                         withContext(Dispatchers.Main) {
-                            resultOfDataFetch.value = duration.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+                            resultOfDataFetch.value =
+                                duration.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                         }
                         duration = durationRepository.fetchData(duration)
                     }
