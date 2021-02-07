@@ -2,6 +2,7 @@ package hr.fer.trackmyroute.ui.routes
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
@@ -16,10 +17,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.google.maps.DirectionsApi
 import com.google.maps.GeoApiContext
 import com.google.maps.PendingResult
@@ -40,12 +38,19 @@ import retrofit2.Call
 class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback {
 
+    companion object {
+        val MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0
+        val FER_LOCATION = "45.801432, 15.971117"
+        val ZOOM_RATE = 17.0f
+    }
+
     var oldRoutePosition: Int? = null
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var lastKnownLocation: LatLng? = null
     private lateinit var locationCallback: LocationCallback
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_route_details)
@@ -69,62 +74,63 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
             distanceTextView.setText("Distance:" + route.distance.toString() + " km")
 
             RetrofitClient.instance.getRouteLocations(route.id)
-                    .enqueue(object : retrofit2.Callback<RouteLocationsResponse> {
-                        override fun onFailure(call: Call<RouteLocationsResponse>, t: Throwable) {
-                            Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
-                        }
+                .enqueue(object : retrofit2.Callback<RouteLocationsResponse> {
+                    override fun onFailure(call: Call<RouteLocationsResponse>, t: Throwable) {
+                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
+                    }
 
-                        override fun onResponse(
-                                call: Call<RouteLocationsResponse>,
-                                response: retrofit2.Response<RouteLocationsResponse>
-                        ) {
+                    override fun onResponse(
+                        call: Call<RouteLocationsResponse>,
+                        response: retrofit2.Response<RouteLocationsResponse>
+                    ) {
 
-                            if (response.body() == null) {
-                                if (response.code() == 404) {
-                                    Toast.makeText(
-                                            applicationContext,
-                                            "code create: ${response.code()}", Toast.LENGTH_LONG
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                            applicationContext,
-                                            "code: ${response.code()}", Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                            } else if (!response.body()?.error!!) {
-//                        Toast.makeText(
-//                            applicationContext,
-//                            response.body().toString(),
-//                            Toast.LENGTH_LONG
-//                        ).show()
-                                routeLocations = ((response.body()?.routeLocations as MutableList<RouteLocation>?)!!)
-
+                        if (response.body() == null) {
+                            if (response.code() == 404) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "code create: ${response.code()}", Toast.LENGTH_LONG
+                                ).show()
                             } else {
                                 Toast.makeText(
-                                        applicationContext,
-                                        response.body()?.message,
-                                        Toast.LENGTH_LONG
+                                    applicationContext,
+                                    "code: ${response.code()}", Toast.LENGTH_LONG
                                 ).show()
                             }
+                        } else if (!response.body()?.error!!) {
+                            routeLocations =
+                                ((response.body()?.routeLocations as MutableList<RouteLocation>?)!!)
+                            for (i in 1..routeLocations.size) {
+                                var start: Boolean = false
+                                var end: Boolean = false
+                                if (i == routeLocations.size)
+                                    end = true
+                                if (i == 1)
+                                    start = true
+                                if (end)
+                                    drawRoute(
+                                        routeLocations[i - 1],
+                                        routeLocations[i - 1], start, end
+                                    )
+                                else
+                                    drawRoute(routeLocations[i - 1], routeLocations[i], start, end)
+                            }
 
+                        } else {
+                            Toast.makeText(
+                                applicationContext,
+                                response.body()?.message,
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
-                    })
+
+                    }
+                })
         } else Log.d("loc", "empty extras")
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        /*fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        // request permission for location access
-        ActivityCompat.requestPermissions(this,
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            MY_PERMISSIONS_REQUEST_FINE_LOCATION)
-*/
-        for (i in 1..routeLocations.size) {
-            drawRoute(routeLocations[i-1], routeLocations[i])
-        }
 
 
         saveRouteButton.setOnClickListener {
@@ -168,38 +174,6 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
     }
 
 
-
-    /*override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            MY_PERMISSIONS_REQUEST_FINE_LOCATION -> {
-                // If request is cancelled, the result arrays are empty.
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
-                        // Permission is granted
-                        mMap.isMyLocationEnabled = true
-                        mMap.uiSettings.isMyLocationButtonEnabled = true
-
-                        // setup location change listening
-                        val locationRequest = LocationRequest()
-                        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                        locationRequest.interval = 1000
-                        fusedLocationClient.requestLocationUpdates(
-                            locationRequest, locationCallback, null)
-
-                    }
-
-                } else {
-                }
-                return
-            }
-
-        }
-    }*/
-
-
     private fun getGeoContext(): GeoApiContext {
 
         val apiContext = GeoApiContext()
@@ -207,46 +181,99 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
         return apiContext
     }
 
-    private fun drawRoute(location1: RouteLocation, location2: RouteLocation) {
+    private fun drawRoute(
+        location1: RouteLocation,
+        location2: RouteLocation,
+        start: Boolean,
+        end: Boolean
+    ) {
         val now = DateTime()
         var origin: String = "${location1.latitude}, ${location1.longitude}"
         var destination: String = "${location2.latitude}, ${location2.longitude}"
 
-        val req = DirectionsApi.newRequest(getGeoContext()).mode(TravelMode.WALKING).
-        origin(origin).destination(destination).departureTime(now)
-
+        val req = DirectionsApi.newRequest(getGeoContext()).mode(TravelMode.WALKING).origin(origin)
+            .destination(destination).departureTime(now)
+        Log.d("origin", origin)
 
         req.setCallback(object : PendingResult.Callback<DirectionsResult> {
             override fun onResult(result: DirectionsResult) {
                 // Handle successful request.
+
                 runOnUiThread {
+//                    mMap.addMarker(MarkerOptions().position().)
+                    if (start && end)
+                        mMap.addMarker(
+                            MarkerOptions().position(
+                                LatLng(
+                                    location1.latitude,
+                                    location1.longitude
+                                )
+                            ).title("Start/End")
+                        )
+                    else if (start) {
+                        mMap.addMarker(
+                            MarkerOptions().position(
+                                LatLng(
+                                    location1.latitude,
+                                    location1.longitude
+                                )
+                            ).title("Start")
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                        )
+                    } else if (end) {
+                        mMap.addMarker(
+                            MarkerOptions().position(
+                                LatLng(
+                                    location2.latitude,
+                                    location2.longitude
+                                )
+                            ).title("End")
+                        )
+                    }
                     mMap.addCircle(
-                           CircleOptions().center(
-                                    LatLng(result.routes[0].legs[0].startLocation.lat,
-                                            result.routes[0].legs[0].startLocation.lng)).radius(1.5).strokeColor(Color.rgb(68, 114, 196)).fillColor(Color.rgb(68, 114, 196)))
+                        CircleOptions().center(
+                            LatLng(
+                                location1.latitude,
+                                location1.longitude
+                            )
+                        ).radius(1.5).strokeColor(Color.rgb(0, 90, 220))
+                            .fillColor(Color.rgb(0, 100, 250))
+                    )
 
                     mMap.addCircle(
-                            CircleOptions().center(
-                                    LatLng(result.routes[0].legs[0].endLocation.lat,
-                                            result.routes[0].legs[0].endLocation.lng)).radius(1.5).strokeColor(Color.rgb(68, 114, 196)).fillColor(Color.rgb(68, 114, 196)))
+                        CircleOptions().center(
+                            LatLng(
+                                location2.latitude,
+                                location2.longitude
+                            )
+                        ).radius(1.5).strokeColor(Color.rgb(0, 90, 220))
+                            .fillColor(Color.rgb(0, 100, 250))
+                    )
 
-                    val decodedPath = PolyUtil.decode(result.routes[0].overviewPolyline.encodedPath)
-                    mMap.addPolyline(PolylineOptions().addAll(decodedPath))
+//                    val decodedPath = PolyUtil.decode(result.routes[0].overviewPolyline.encodedPath)
+//                    mMap.addPolyline(PolylineOptions().addAll(decodedPath))
+                    if (start)
+                        mMap.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    location1.latitude,
+                                    location1.longitude
+                                ), ZOOM_RATE
+                            )
+                        )
                 }
 
             }
 
             override fun onFailure(e: Throwable) {
-                // Handle error.
+                Toast.makeText(
+                    applicationContext,
+                    "Cant show locations",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         })
 
     }
-
-    /*companion object {
-        val MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0
-        val ZOOM_RATE = 16.0f
-    }*/
-
 
 }
