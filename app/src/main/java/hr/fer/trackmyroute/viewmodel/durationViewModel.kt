@@ -38,6 +38,7 @@ class durationViewModel : ViewModel() {
     var duration: LocalTime = LocalTime.now()
     var durationInHours: Double = 0.0
     var durationInMinutes: Double = 0.0
+    var durationInSeconds: Double = 0.0
 
     fun onStop() {
         viewModelScope.apply {
@@ -73,6 +74,9 @@ class durationViewModel : ViewModel() {
                         durationInMinutes = duration.hour.toDouble() * 60
                         durationInMinutes += duration.minute.toDouble()
                         durationInMinutes += duration.second.toDouble() / 60.0
+                        durationInSeconds = duration.hour.toDouble() * 3600.0
+                        durationInSeconds += duration.minute.toDouble() * 60
+                        durationInSeconds += duration.second.toDouble()
                         withContext(Dispatchers.Main) {
                             resultOfDataFetch.value =
                                 duration.format(DateTimeFormatter.ofPattern("HH:mm:ss"))

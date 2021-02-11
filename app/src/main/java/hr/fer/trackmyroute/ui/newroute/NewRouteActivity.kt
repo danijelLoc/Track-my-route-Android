@@ -206,7 +206,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
 
 
         distanceViewModel.resultOfDataFetch.observe(this, Observer {
-            distanceTextView.text = it
+            distanceTextView.text = String.format("%7.1f km", distanceViewModel.distance.toString())
             if (fusedLocationClient != null) {
                 //requestLocationUpdates()
             }
@@ -215,10 +215,15 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
 
 
         durationViewModel.resultOfDataFetch.observe(this, Observer {
-            durationTextView.text = it
+            var durationString = durationViewModel.duration.hour.toString()
+            durationString.plus(":")
+            durationString.plus(durationViewModel.duration.minute.toString())
+            durationString.plus(":")
+            durationString.plus(durationViewModel.duration.second.toString())
+            durationTextView.text = durationString
             if (abs(durationViewModel.durationInHours) > 1e-8)
                 avgSpeed = distanceViewModel.distance / durationViewModel.durationInHours
-            avgSpeedString = String.format("%7.2f km/h", avgSpeed)
+            avgSpeedString = String.format("%7.1f km/h", avgSpeed)
             averageSpeedTextView.text = avgSpeedString
         })
 
@@ -245,7 +250,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
             route.name = routeName
             route.date = LocalDateTime.now().toString() //"2021-01-08T12:02:45.137"
             route.distance = distanceViewModel.distance
-            route.duration = durationViewModel.durationInHours
+            route.duration = durationViewModel.durationInSeconds
             route.speed = route.distance / route.duration
             route.user = SharedPrefManager.getInstance(applicationContext).user
 

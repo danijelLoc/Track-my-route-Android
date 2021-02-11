@@ -69,9 +69,17 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
             var title: String? = route.name
             routeTitleEditText.setText(title)
             dateTextView.setText(route.date)
-            timeTextView.setText("Time: " + route.duration.toString())
-            speedTextView.setText("Avg. speed:" + route.speed.toString() + " km/h")
-            distanceTextView.setText("Distance:" + route.distance.toString() + " km")
+            var duration = route.duration.toInt()
+            var durationString = (duration % 3600).toString()
+            durationString.plus(":")
+            duration = duration/3600
+            durationString.plus((duration % 60).toString())
+            durationString.plus(":")
+            duration = duration/60
+            durationString.plus(duration.toString())
+            timeTextView.setText("Time: " + durationString)
+            speedTextView.setText(String.format("Avg. speed: %7.1f km/h", route.speed.toString()))
+            distanceTextView.setText(String.format("Distance: %7.1f km", route.distance.toString()))
 
             RetrofitClient.instance.getRouteLocations(route.id)
                 .enqueue(object : retrofit2.Callback<RouteLocationsResponse> {
