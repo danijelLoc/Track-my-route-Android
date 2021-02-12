@@ -311,9 +311,9 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
                 })
             // this is the way
             val intent = Intent(this, RouteListActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
-//            not refreshing new value for some reason
-//            finish()
+            finish()
         }
     }
 
