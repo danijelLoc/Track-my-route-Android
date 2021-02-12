@@ -70,14 +70,24 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
             routeTitleEditText.setText(title)
             dateTextView.setText(route.date)
             var duration = route.duration.toInt()
-            var durationString = (duration / 3600).toString()
+            var durationString = "Time: "
+            if (duration/3600<10) {
+                durationString.plus("0")
+            }
+            durationString = (duration / 3600).toString()
             durationString = durationString.plus(":")
             duration = duration % 3600
+            if (duration/60<10) {
+                durationString.plus("0")
+            }
             durationString = durationString.plus((duration / 60).toString())
             durationString = durationString.plus(":")
             duration = duration % 60
+            if (duration<10) {
+                durationString.plus("0")
+            }
             durationString = durationString.plus(duration.toString())
-            timeTextView.setText("Time: " + durationString)
+            timeTextView.setText(durationString)
             speedTextView.setText(String.format("Avg. speed: %7.3f km/h", route.speed))
             distanceTextView.setText(String.format("Distance: %7.3f km", route.distance))
 

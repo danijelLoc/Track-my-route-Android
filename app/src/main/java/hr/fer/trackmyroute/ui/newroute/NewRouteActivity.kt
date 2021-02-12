@@ -218,10 +218,20 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
 
 
         durationViewModel.resultOfDataFetch.observe(this, Observer {
-            var durationString = durationViewModel.duration.hour.toString()
+            var durationString = "Time: "
+            if (durationViewModel.duration.hour<10) {
+                durationString.plus("0")
+            }
+            durationString = durationViewModel.duration.hour.toString()
             durationString = durationString.plus(":")
+            if (durationViewModel.duration.minute<10) {
+                durationString.plus("0")
+            }
             durationString = durationString.plus(durationViewModel.duration.minute.toString())
             durationString = durationString.plus(":")
+            if (durationViewModel.duration.second<10) {
+                durationString.plus("0")
+            }
             durationString = durationString.plus(durationViewModel.duration.second.toString())
             durationTextView.text = durationString
             if (abs(durationViewModel.durationInHours) > 1e-8)
