@@ -70,16 +70,16 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
             routeTitleEditText.setText(title)
             dateTextView.setText(route.date)
             var duration = route.duration.toInt()
-            var durationString = (duration % 3600).toString()
-            durationString.plus(":")
-            duration = duration/3600
-            durationString.plus((duration % 60).toString())
-            durationString.plus(":")
-            duration = duration/60
-            durationString.plus(duration.toString())
+            var durationString = (duration / 3600).toString()
+            durationString = durationString.plus(":")
+            duration = duration % 3600
+            durationString = durationString.plus((duration / 60).toString())
+            durationString = durationString.plus(":")
+            duration = duration % 60
+            durationString = durationString.plus(duration.toString())
             timeTextView.setText("Time: " + durationString)
-            speedTextView.setText(String.format("Avg. speed: %7.1f km/h", route.speed.toString()))
-            distanceTextView.setText(String.format("Distance: %7.1f km", route.distance.toString()))
+            speedTextView.setText(String.format("Avg. speed: %7.3f km/h", route.speed))
+            distanceTextView.setText(String.format("Distance: %7.3f km", route.distance))
 
             RetrofitClient.instance.getRouteLocations(route.id)
                 .enqueue(object : retrofit2.Callback<RouteLocationsResponse> {
@@ -96,7 +96,7 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
                             if (response.code() == 404) {
                                 Toast.makeText(
                                     applicationContext,
-                                    "code create: ${response.code()}", Toast.LENGTH_LONG
+                                    "No locations found", Toast.LENGTH_LONG
                                 ).show()
                             } else {
                                 Toast.makeText(
@@ -164,8 +164,11 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
                             if (oldRoutePosition != null) {
                                 viewModel.updateRouteInRepository(oldRoutePosition!!, route)
 //                                listOfRoutesView.recycledViewPool.clear();
-
-                            } else viewModel.saveRouteToRepository(route)
+                                finish()
+                            } else {
+                                viewModel.saveRouteToRepository(route)
+                                finish()
+                            }
                         }
                         /*Toast.makeText(
                             applicationContext,

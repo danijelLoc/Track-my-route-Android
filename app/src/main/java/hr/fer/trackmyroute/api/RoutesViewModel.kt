@@ -14,6 +14,7 @@ class RoutesViewModel : ViewModel() {
 
     fun saveRouteToRepository(route: Route) {
         RoutesRepository.routeList.add(route)
+        RoutesRepository.routeList[0] = RoutesRepository.routeList[0]
     }
 
     fun updateRouteInRepository(position: Int, route: Route) {

@@ -35,6 +35,7 @@ import hr.fer.trackmyroute.api.RoutesViewModel
 import hr.fer.trackmyroute.api.SharedPrefManager
 import hr.fer.trackmyroute.data.model.*
 import hr.fer.trackmyroute.ui.login.MainActivity
+import hr.fer.trackmyroute.ui.routes.RouteListActivity
 import hr.fer.trackmyroute.viewmodel.distanceViewModel
 import hr.fer.trackmyroute.viewmodel.durationViewModel
 import kotlinx.android.synthetic.main.activity_newroute.*
@@ -89,6 +90,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
             ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
                 RoutesViewModel::class.java
             )
+        val extras = intent.extras
 
         val distanceViewModel =
             ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
@@ -206,7 +208,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
 
 
         distanceViewModel.resultOfDataFetch.observe(this, Observer {
-            distanceTextView.text = String.format("%7.1f km", distanceViewModel.distance.toString())
+            distanceTextView.text = String.format("%7.3f km", distanceViewModel.distance)
             if (fusedLocationClient != null) {
                 //requestLocationUpdates()
             }
@@ -216,14 +218,14 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
 
         durationViewModel.resultOfDataFetch.observe(this, Observer {
             var durationString = durationViewModel.duration.hour.toString()
-            durationString.plus(":")
-            durationString.plus(durationViewModel.duration.minute.toString())
-            durationString.plus(":")
-            durationString.plus(durationViewModel.duration.second.toString())
+            durationString = durationString.plus(":")
+            durationString = durationString.plus(durationViewModel.duration.minute.toString())
+            durationString = durationString.plus(":")
+            durationString = durationString.plus(durationViewModel.duration.second.toString())
             durationTextView.text = durationString
             if (abs(durationViewModel.durationInHours) > 1e-8)
                 avgSpeed = distanceViewModel.distance / durationViewModel.durationInHours
-            avgSpeedString = String.format("%7.1f km/h", avgSpeed)
+            avgSpeedString = String.format("%7.3f km/h", avgSpeed)
             averageSpeedTextView.text = avgSpeedString
         })
 
@@ -234,6 +236,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
             durationViewModel.fetchDataFromRepository()
         }
 
+        // SAVE ##################################################################################
         stopButton.setOnClickListener {
             durationViewModel.onStop()
             distanceViewModel.onStop()
@@ -251,7 +254,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
             route.date = LocalDateTime.now().toString() //"2021-01-08T12:02:45.137"
             route.distance = distanceViewModel.distance
             route.duration = durationViewModel.durationInSeconds
-            route.speed = route.distance / route.duration
+            route.speed = route.distance / durationViewModel.durationInHours
             route.user = SharedPrefManager.getInstance(applicationContext).user
 
 
@@ -269,12 +272,13 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
                         if (response.code() == 200) {
                             val newRoute: Route = response.body()!!
                             routesViewModel.saveRouteToRepository(newRoute)
+
                             // save locations +++++++++++++++++++++++++++++++++++++++++++++++++
                             var locations = distanceViewModel.locationList
-                            for((index,value) in locations.withIndex()){
+                            for ((index, value) in locations.withIndex()) {
                                 var location = value;
-                                location.route=newRoute
-                                locations.set(index,location)
+                                location.route = newRoute
+                                locations.set(index, location)
                             }
                             RetrofitClient.instance.saveRouteLocations(
                                 newRoute.id,
@@ -285,11 +289,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
                                         call: Call<RouteLocationResponse>,
                                         t: Throwable
                                     ) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            t.message,
-                                            Toast.LENGTH_LONG
-                                        ).show()
+
                                     }
 
                                     override fun onResponse(
@@ -297,12 +297,6 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
                                         response: retrofit2.Response<RouteLocationResponse>
                                     ) {
                                         if (response.code() == 200) {
-                                            Toast.makeText(
-                                                applicationContext,
-                                                response.body()?.message,
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                            finish()
                                         } else {
                                             Toast.makeText(
                                                 applicationContext,
@@ -313,18 +307,13 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
                                     }
                                 })
                         }
-                        /*Toast.makeText(
-                            applicationContext,
-                            response.body()!!,
-                            Toast.LENGTH_LONG
-                        ).show()*/
                     }
                 })
-
-
-
-
-            finish()
+            // this is the way
+            val intent = Intent(this, RouteListActivity::class.java)
+            startActivity(intent)
+//            not refreshing new value for some reason
+//            finish()
         }
     }
 
@@ -528,64 +517,5 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
     fun degreeToRadian(deg: Double): Double {
         return deg * (Math.PI / 180)
     }
-
-    /*override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_route_details)
-        Log.d("loc", "called create")
-        val viewModel =
-            ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
-                RoutesViewModel::class.java
-            )
-        val extras = intent.extras
-        if (extras != null) {
-            var position: Int = extras["position"] as Int;
-            oldRoutePosition = position
-            Log.d("loc", position.toString())
-            var route: Route = viewModel.getRouteFromRepository(position)
-            var title: String? = route.name
-            routeTitleEditText.setText(title)
-        } else Log.d("loc", "empty extras")
-
-
-
-
-        saveRouteButton.setOnClickListener {
-            var route = Route()
-            if (oldRoutePosition != null) {
-                route = viewModel.getRouteFromRepository(oldRoutePosition!!)
-            }
-            route.name = routeTitleEditText.text.toString()
-
-
-            RetrofitClient.instance.saveRoute(route)
-                .enqueue(object : retrofit2.Callback<RouteResponse> {
-                    override fun onFailure(call: Call<RouteResponse>, t: Throwable) {
-                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
-                    }
-
-                    override fun onResponse(
-                        call: Call<RouteResponse>,
-                        response: retrofit2.Response<RouteResponse>
-                    ) {
-                        if (!response.body()?.error!!) {
-                            // save to live data on front end
-                            if (oldRoutePosition != null) {
-                                viewModel.updateRouteInRepository(oldRoutePosition!!, route)
-//                                listOfRoutesView.recycledViewPool.clear();
-
-                            } else viewModel.saveRouteToRepository(route)
-                        }
-                        Toast.makeText(
-                            applicationContext,
-                            response.body()?.message,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                })
-            finish()
-        }
-    }*/
-
 
 }

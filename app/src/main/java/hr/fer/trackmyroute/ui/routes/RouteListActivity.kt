@@ -49,10 +49,10 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
 
                     if (response.body() == null) {
                         if (response.code() == 404) {
-                            Toast.makeText(
-                                applicationContext,
-                                "code create: ${response.code()}", Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                applicationContext,
+//                                "code create: ${response.code()}", Toast.LENGTH_LONG
+//                            ).show()
                         } else {
                             Toast.makeText(
                                 applicationContext,
@@ -112,7 +112,8 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
 
         newRouteActionButton.setOnClickListener {
             val intent = Intent(this, NewRouteActivity::class.java)
-            startActivity(intent)
+            intent.putExtra("", 0)
+            startActivityForResult(intent, 0)
         }
 
         logOutButton.setOnClickListener {
@@ -163,33 +164,24 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
                         if (response.code() == 404) {
                             Toast.makeText(
                                 applicationContext,
-                                "code: ${response.code()}", Toast.LENGTH_LONG
-                            ).show()
-
-                            Toast.makeText(
-                                applicationContext,
-                                "code: ${response.code()}", Toast.LENGTH_LONG
+                                "code: ${response.code()}" + ",position=" + position.toString(),
+                                Toast.LENGTH_LONG
                             ).show()
                         }
                     } else if (!response.body()?.error!!) {
-                        Toast.makeText(
-                            applicationContext,
-                            response.body().toString(),
-                            Toast.LENGTH_LONG
-                        ).show()
                         // save to live data on front end
                         viewModel.removeRouteFromRepository(position)
+                        viewModel.getRoutesRepository()
                     } else {
                         Toast.makeText(
                             applicationContext,
-                            response.body()?.message,
+                            response.body()?.message + ",position=" + position.toString(),
                             Toast.LENGTH_LONG
                         ).show()
                     }
                 }
             })
-        routesAdapter.listOfRoutes.removeRouteFromRepository(position)
-        routesAdapter.listOfRoutes.getRoutesRepository()
+
     }
 
     override fun onStart() {
