@@ -53,6 +53,11 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //         remove title bar
+        try {
+            this.supportActionBar!!.hide()
+        } catch (e: NullPointerException) {
+        }
         setContentView(R.layout.activity_route_details)
         Log.d("loc", "called create")
         val viewModel =
