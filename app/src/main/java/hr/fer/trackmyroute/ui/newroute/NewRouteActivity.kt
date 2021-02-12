@@ -57,6 +57,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationRequest: LocationRequest
     private var lastKnownLocationNotNull: Boolean = false
+    private lateinit var date: String
 
     @Override
     @RequiresApi(Build.VERSION_CODES.O)
@@ -234,6 +235,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
         startButton.setOnClickListener {
             distanceViewModel.onStart()
             durationViewModel.fetchDataFromRepository()
+            date = LocalDateTime.now().toString()
         }
 
         // SAVE ##################################################################################
@@ -251,7 +253,14 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
             }
 
             route.name = routeName
-            route.date = LocalDateTime.now().toString() //"2021-01-08T12:02:45.137"
+            var dateString = date.substring(8,9)
+            dateString = dateString.plus(".")
+            dateString = dateString.plus(date.substring(5,6))
+            dateString = dateString.plus(".")
+            dateString = dateString.plus(date.substring(0,3))
+            dateString = dateString.plus(". ")
+            dateString = dateString.plus(date.substring(11,15))
+            route.date = dateString //"2021-01-08T12:02:45.137"
             route.distance = distanceViewModel.distance
             route.duration = durationViewModel.durationInSeconds
             route.speed = route.distance / durationViewModel.durationInHours

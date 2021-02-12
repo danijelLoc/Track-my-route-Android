@@ -78,7 +78,7 @@ class RoutesAdapter(
 
 
             viewHolder.routeDateTextView?.text =
-                listOfRoutes.routeList.value!![position].date.toString()
+                listOfRoutes.routeList.value!![position].date
         }
     }
 }

@@ -261,8 +261,8 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
                             .fillColor(Color.rgb(0, 100, 250))
                     )
 
-//                    val decodedPath = PolyUtil.decode(result.routes[0].overviewPolyline.encodedPath)
-//                    mMap.addPolyline(PolylineOptions().addAll(decodedPath))
+                    val decodedPath = PolyUtil.decode(result.routes[0].overviewPolyline.encodedPath)
+                   mMap.addPolyline(PolylineOptions().addAll(decodedPath).color(Color.rgb(0, 100, 250)).width(7.5F))
                     if (start)
                         mMap.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
