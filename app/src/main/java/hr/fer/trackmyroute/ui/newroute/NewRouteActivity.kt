@@ -209,7 +209,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
 
 
         distanceViewModel.resultOfDataFetch.observe(this, Observer {
-            distanceTextView.text = String.format("%7.3f km", distanceViewModel.distance)
+            distanceTextView.text = String.format("%7.2f km", distanceViewModel.distance)
             if (fusedLocationClient != null) {
                 //requestLocationUpdates()
             }
@@ -218,25 +218,10 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
 
 
         durationViewModel.resultOfDataFetch.observe(this, Observer {
-            var durationString = "Time: "
-            if (durationViewModel.duration.hour<10) {
-                durationString.plus("0")
-            }
-            durationString = durationViewModel.duration.hour.toString()
-            durationString = durationString.plus(":")
-            if (durationViewModel.duration.minute<10) {
-                durationString.plus("0")
-            }
-            durationString = durationString.plus(durationViewModel.duration.minute.toString())
-            durationString = durationString.plus(":")
-            if (durationViewModel.duration.second<10) {
-                durationString.plus("0")
-            }
-            durationString = durationString.plus(durationViewModel.duration.second.toString())
-            durationTextView.text = durationString
+            durationTextView.text = durationViewModel.durationString
             if (abs(durationViewModel.durationInHours) > 1e-8)
                 avgSpeed = distanceViewModel.distance / durationViewModel.durationInHours
-            avgSpeedString = String.format("%7.3f km/h", avgSpeed)
+            avgSpeedString = String.format("%7.2f km/h", avgSpeed)
             averageSpeedTextView.text = avgSpeedString
         })
 
@@ -263,14 +248,7 @@ class NewRouteActivity : AppCompatActivity(), OnMapReadyCallback,
             }
 
             route.name = routeName
-            var dateString = date.substring(8,9)
-            dateString = dateString.plus(".")
-            dateString = dateString.plus(date.substring(5,6))
-            dateString = dateString.plus(".")
-            dateString = dateString.plus(date.substring(0,3))
-            dateString = dateString.plus(". ")
-            dateString = dateString.plus(date.substring(11,15))
-            route.date = dateString //"2021-01-08T12:02:45.137"
+            route.date = date //"2021-01-08T12:02:45.137"
             route.distance = distanceViewModel.distance
             route.duration = durationViewModel.durationInSeconds
             route.speed = route.distance / durationViewModel.durationInHours

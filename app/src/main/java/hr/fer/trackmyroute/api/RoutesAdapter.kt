@@ -76,9 +76,15 @@ class RoutesAdapter(
         if (listOfRoutes != null) {
             viewHolder.routeTitleTextView?.text = listOfRoutes.routeList.value!![position].name
 
-
-            viewHolder.routeDateTextView?.text =
-                listOfRoutes.routeList.value!![position].date
+            var date = listOfRoutes.routeList.value!![position].date
+            var dateString = date.substring(8,10)
+            dateString = dateString.plus(".")
+            dateString = dateString.plus(date.substring(5,7))
+            dateString = dateString.plus(".")
+            dateString = dateString.plus(date.substring(0,4))
+            dateString = dateString.plus(". ")
+            dateString = dateString.plus(date.substring(11,16))
+            viewHolder.routeDateTextView?.text = dateString
         }
     }
 }

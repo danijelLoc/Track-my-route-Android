@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
 
     //    private val AUTH = "Basic "+ Base64.encodeToString("dan:password".toByteArray(), Base64.NO_WRAP)
-    private const val BASE_URL = "http://192.168.137.1:8080/"
+    private const val BASE_URL = "http://85.10.51.213:8080/"
 
     val instance: Api by lazy {
         val interceptor = HttpLoggingInterceptor()

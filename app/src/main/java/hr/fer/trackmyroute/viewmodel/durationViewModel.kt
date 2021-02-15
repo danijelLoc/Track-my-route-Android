@@ -36,6 +36,7 @@ class durationViewModel : ViewModel() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     var duration: LocalTime = LocalTime.now()
+    var durationString: String = ""
     var durationInHours: Double = 0.0
     var durationInMinutes: Double = 0.0
     var durationInSeconds: Double = 0.0
@@ -77,9 +78,26 @@ class durationViewModel : ViewModel() {
                         durationInSeconds = duration.hour.toDouble() * 3600.0
                         durationInSeconds += duration.minute.toDouble() * 60
                         durationInSeconds += duration.second.toDouble()
+                        val builder = StringBuilder()
+                        if (duration.hour<10) {
+                            builder.append("0")
+                        }
+                        builder.append(duration.hour.toString())
+                        builder.append(":")
+                        if (duration.minute<10) {
+                            builder.append("0")
+                        }
+                        builder.append(duration.minute.toString())
+                        builder.append(":")
+                        if (duration.second<10) {
+                            builder.append("0")
+                        }
+                        builder.append(duration.second.toString())
+                        durationString = builder.toString()
                         withContext(Dispatchers.Main) {
-                            resultOfDataFetch.value =
-                                duration.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+                            /*resultOfDataFetch.value =
+                                duration.format(DateTimeFormatter.ofPattern("HH:mm:ss"))*/
+                            resultOfDataFetch.value = durationString
                         }
                         duration = durationRepository.fetchData(duration)
                     }

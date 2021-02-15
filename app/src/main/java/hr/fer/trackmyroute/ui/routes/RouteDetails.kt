@@ -68,28 +68,36 @@ class RouteDetails : AppCompatActivity(), OnMapReadyCallback,
             var route: Route = viewModel.getRouteFromRepository(position)
             var title: String? = route.name
             routeTitleEditText.setText(title)
-            dateTextView.setText(route.date)
+            var date = route.date
+            var dateString = date.substring(8,10)
+            dateString = dateString.plus(".")
+            dateString = dateString.plus(date.substring(5,7))
+            dateString = dateString.plus(".")
+            dateString = dateString.plus(date.substring(0,4))
+            dateString = dateString.plus(". ")
+            dateString = dateString.plus(date.substring(11,16))
+            dateTextView.setText(dateString)
             var duration = route.duration.toInt()
-            var durationString = "Time: "
-            if (duration/3600<10) {
-                durationString.plus("0")
+            val builder = StringBuilder()
+            if ((duration/3600)<10) {
+                builder.append("0")
             }
-            durationString = (duration / 3600).toString()
-            durationString = durationString.plus(":")
+            builder.append((duration / 3600).toString())
+            builder.append(":")
             duration = duration % 3600
-            if (duration/60<10) {
-                durationString.plus("0")
+            if ((duration/60)<10) {
+                builder.append("0")
             }
-            durationString = durationString.plus((duration / 60).toString())
-            durationString = durationString.plus(":")
+            builder.append((duration / 60).toString())
+            builder.append(":")
             duration = duration % 60
             if (duration<10) {
-                durationString.plus("0")
+                builder.append("0")
             }
-            durationString = durationString.plus(duration.toString())
-            timeTextView.setText(durationString)
-            speedTextView.setText(String.format("Avg. speed: %7.3f km/h", route.speed))
-            distanceTextView.setText(String.format("Distance: %7.3f km", route.distance))
+            builder.append(duration.toString())
+            timeTextView.setText("Time:    " + builder)
+            speedTextView.setText(String.format("Avg. speed: %7.2f km/h", route.speed))
+            distanceTextView.setText(String.format("Distance: %7.2f km", route.distance))
 
             RetrofitClient.instance.getRouteLocations(route.id)
                 .enqueue(object : retrofit2.Callback<RouteLocationsResponse> {
