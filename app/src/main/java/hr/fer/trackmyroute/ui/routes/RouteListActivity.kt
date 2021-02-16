@@ -3,6 +3,8 @@ package hr.fer.trackmyroute.ui.routes
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -30,6 +32,29 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
 
     lateinit var routesAdapter: RoutesAdapter
     lateinit var viewModel: RoutesViewModel
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here.
+        val id = item.getItemId()
+
+        if (id == R.id.action_one) {
+//            Toast.makeText(this, "Item One Clicked", Toast.LENGTH_LONG).show()
+            SharedPrefManager.getInstance(applicationContext).clear()
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,12 +141,6 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
             startActivityForResult(intent, 0)
         }
 
-        logOutButton.setOnClickListener {
-            SharedPrefManager.getInstance(applicationContext).clear()
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-        }
 
     }
 
