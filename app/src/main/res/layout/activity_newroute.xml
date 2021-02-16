@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#143B75"
     android:backgroundTintMode="add"
-    android:foregroundTint="#FFFFFF"
+    android:foregroundTint="#143B75"
     android:foregroundTintMode="add">
 
 
@@ -108,6 +109,7 @@
         android:layout_marginStart="68dp"
         android:layout_marginTop="440dp"
         android:text="00:00:00"
+        android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -120,6 +122,7 @@
         android:layout_marginTop="440dp"
         android:layout_marginEnd="35dp"
         android:text="    0.00 km/h"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toStartOf="@+id/distanceTextView"
         app:layout_constraintHorizontal_bias="0.285"
         app:layout_constraintStart_toEndOf="@+id/durationTextView"
@@ -133,6 +136,7 @@
         android:layout_marginEnd="60dp"
         android:digits="4"
         android:text="      0 m"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

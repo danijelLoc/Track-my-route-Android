@@ -19,12 +19,16 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/newRouteActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="95dp"
+            android:layout_height="87dp"
             android:layout_gravity="bottom|end"
             android:clickable="true"
+            android:cropToPadding="false"
             android:focusable="true"
-            app:srcCompat="@android:drawable/ic_menu_add" />
+            android:foreground="@android:drawable/ic_input_add"
+            app:borderWidth="2dp"
+            app:fabSize="auto"
+            app:maxImageSize="100dp" />
 
         <Button
             android:id="@+id/logOutButton"
@@ -36,7 +40,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listOfRoutesView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="#143B75">
 
         </androidx.recyclerview.widget.RecyclerView>
 
