@@ -46,6 +46,7 @@ class RouteListActivity : AppCompatActivity(), RoutesAdapter.OnRouteListener,
         if (id == R.id.action_one) {
 //            Toast.makeText(this, "Item One Clicked", Toast.LENGTH_LONG).show()
             SharedPrefManager.getInstance(applicationContext).clear()
+            routesAdapter.listOfRoutes.clearRoutesRepository()
             val intent = Intent(applicationContext, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)

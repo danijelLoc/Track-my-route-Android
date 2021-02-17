@@ -12,6 +12,11 @@ class RoutesViewModel : ViewModel() {
         routeList.value = RoutesRepository.routeList
     }
 
+    fun clearRoutesRepository() {
+        routeList = MutableLiveData<List<Route>>()
+        RoutesRepository.routeList.clear();
+    }
+
     fun saveRouteToRepository(route: Route) {
         RoutesRepository.routeList.add(route)
         RoutesRepository.routeList[0] = RoutesRepository.routeList[0]
